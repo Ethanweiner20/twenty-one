@@ -8,7 +8,10 @@ GAME_NUMBER = 21 # Change the game number as you wish
 DEALER_HIT_LIMIT = ((17.0 / 21) * GAME_NUMBER).round
 
 SUITS = %w(S H D C)
-RANKS = (2..10).map(&:to_s) + %w(J Q K A)
+NUMBERED_RANKS = (2..10).map(&:to_s)
+ROYAL_RANKS = %w(J Q K)
+ACE = 'A'
+RANKS = NUMBERED_RANKS + ROYAL_RANKS + [ACE]
 SUIT_SYMBOLS = {
   'S' => "\u2660",
   'H' => "\u2665",
@@ -16,6 +19,7 @@ SUIT_SYMBOLS = {
   'C' => "\u2663",
   '*' => "*"
 }
+
 BREAK_DURATION = 1.75
 
 MESSAGES = {
@@ -44,13 +48,13 @@ MESSAGES = {
 def play_twenty_one
   display_welcome
   loop do
-    play_hand
+    play_match
     break unless play_again?
   end
   display_goodbye
 end
 
-def play_hand
+def play_match
   cards = initialize_cards
   totals = initialize_totals
   deal_cards(cards, totals)
@@ -153,11 +157,11 @@ def total(cards)
 end
 
 def value(rank)
-  if (2..10).map(&:to_s).include?(rank)
+  if NUMBERED_RANKS.include?(rank)
     rank.to_i
-  elsif %w(J Q K).include?(rank)
+  elsif ROYAL_RANKS.include?(rank)
     10
-  elsif rank == 'A'
+  elsif rank == ACE
     1
   end
 end
@@ -229,13 +233,15 @@ end
 # Results
 
 def evaluate_result(totals)
-  if bust?(totals[:player])
+  player_total = totals[:player]
+  dealer_total = totals[:dealer]
+  if bust?(player_total)
     :player_bust
-  elsif bust?(totals[:dealer])
+  elsif bust?(dealer_total)
     :dealer_bust
-  elsif totals[:player] > totals[:dealer]
+  elsif player_total > dealer_total
     :player_won
-  elsif totals[:player] < totals[:dealer]
+  elsif player_total < dealer_total
     :dealer_won
   else
     :tie

@@ -113,3 +113,7 @@ A Suite is one of:
 1. Using a cache to store player & dealer totals X
 2. The last call is different because if the user wants to play again, there is no need to skip over the rest of the loop (using `next`), since we are at the end of the loop. We can simply continue, which will immediately send us back to the beginning of the loop.
 3. Consistent end-of-round output
+
+- `play_hand` VS `play_match`: Agree, should be named differently. `play_hand` would be better suited for a method that involved, well, playing just one player's hand of cards. This doesn't really make sense in the context of blackjack (hands are never really "played" -- they are just accumulated).
+- Extraced ranks into "sub"-constants that I use in the `value` method
+- Agreed. Indexing into a hash sometimes I feels like such a simple operation, I almost treat something like `totals[:player]` like a variable itself. It's easy to forget that it actually does require an indexing process, which could in some scenarios, affect performance. Using local variables also helps with readability.
